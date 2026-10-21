@@ -1836,7 +1836,7 @@ export default function App() {
                     }}
                     className="mt-2 text-xs uppercase tracking-wider font-semibold underline"
                   >
-                    Shop This Look Ă˘â€ â€™
+                    Shop This Look →
                   </button>
                 </div>
               </div>
@@ -1859,7 +1859,7 @@ export default function App() {
                     }}
                     className="mt-2 text-xs uppercase tracking-wider font-semibold underline"
                   >
-                    Shop This Look Ă˘â€ â€™
+                    Shop This Look →
                   </button>
                 </div>
               </div>
@@ -3060,7 +3060,7 @@ export default function App() {
                   onClick={() => goToShop("all")}
                   className="flex items-center gap-1 text-xs font-semibold uppercase tracking-widest hover:underline max-[360px]:flex-col max-[360px]:items-center max-[360px]:gap-0 max-[360px]:text-[9px] max-[360px]:leading-[1.25] max-[360px]:tracking-[0.1em]"
                 >
-                  <span>View All</span><span>Categories Ă˘â€ â€™</span>
+                  <span>View All</span><span>Categories →</span>
                 </button>
               </div>
 
@@ -3417,7 +3417,7 @@ export default function App() {
                   onClick={() => goToShop("all")}
                   className="text-xs uppercase tracking-widest font-semibold pb-1 border-b border-black"
                 >
-                  View All Products ({PRODUCTS.length}) Ă˘â€ â€™
+                  View All Products ({PRODUCTS.length}) →
                 </button>
               </div>
 

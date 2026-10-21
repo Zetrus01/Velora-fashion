@@ -1,10 +1,9 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Localize, useLanguage } from "./i18n";
 import {
   ShoppingBag,
   Heart,
@@ -1134,6 +1133,10 @@ export default function App() {
   const [authNotice, setAuthNotice] = useState("");
   const [shopCategory, setShopCategory] = useState<ShopCategory>("all");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currency, setCurrency] = useState<"USD" | "EUR" | "GBP" | "HUF">("USD");
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const [languageSelectorTab, setLanguageSelectorTab] = useState<"language" | "currency">("language");
+  const languageSelectorRef = useRef<HTMLDivElement>(null);
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
@@ -1182,15 +1185,6 @@ export default function App() {
   const productScrollProgressRef = useRef<HTMLDivElement>(null);
   const newSeasonBannerRef = useRef<HTMLElement>(null);
   const newSeasonImageLayerRef = useRef<HTMLDivElement>(null);
-  const [currency, setCurrency] = useState<"USD" | "EUR" | "GBP" | "HUF">(
-    "USD",
-  );
-  const { currentLanguage: language, setCurrentLanguage: setLanguage } = useLanguage();
-  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
-  const [languageSelectorTab, setLanguageSelectorTab] = useState<
-    "language" | "currency"
-  >("language");
-  const languageSelectorRef = useRef<HTMLDivElement>(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
@@ -1199,6 +1193,16 @@ export default function App() {
     updateScrollState();
     window.addEventListener("scroll", updateScrollState, { passive: true });
     return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
+
+  useEffect(() => {
+    const closeLanguageMenu = (event: MouseEvent) => {
+      if (!languageSelectorRef.current?.contains(event.target as Node)) {
+        setIsLanguageMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", closeLanguageMenu);
+    return () => document.removeEventListener("mousedown", closeLanguageMenu);
   }, []);
 
   useEffect(() => {
@@ -1352,25 +1356,14 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const closeLanguageMenu = (event: MouseEvent) => {
-      if (!languageSelectorRef.current?.contains(event.target as Node)) {
-        setIsLanguageMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", closeLanguageMenu);
-    return () => document.removeEventListener("mousedown", closeLanguageMenu);
-  }, []);
-
-  const currencySymbols = { USD: "$", EUR: "Ă˘â€šÂ¬", GBP: "Ă‚Ĺ", HUF: "Ft " };
-  const currencyRates = { USD: 1, EUR: 0.92, GBP: 0.79, HUF: 360 };
-
   const formatPrice = (priceInUSD: number) => {
-    const converted = priceInUSD * currencyRates[currency];
+    const rates = { USD: 1, EUR: 0.92, GBP: 0.79, HUF: 360 };
+    const symbols = { USD: "$", EUR: "€", GBP: "£", HUF: "Ft " };
+    const converted = priceInUSD * rates[currency];
     if (currency === "HUF") {
       return `Ft ${Math.round(converted).toLocaleString("hu-HU")}`;
     }
-    return `${currencySymbols[currency]}${converted.toFixed(2)}`;
+    return `${symbols[currency]}${converted.toFixed(2)}`;
   };
 
   const handleAddToCart = (product: Product, size?: string, color?: string) => {
@@ -1507,7 +1500,6 @@ export default function App() {
     }`;
 
   return (
-    <Localize>
     <div className="min-h-screen bg-[#FAF9F6] text-[#1A1A1A] flex flex-col selection:bg-black selection:text-white">
       {/* Left navigation, centered wordmark, and utility actions on the right */}
       <header
@@ -1616,12 +1608,8 @@ export default function App() {
                 className={`flex items-center gap-1 p-0.5 text-[10px] font-medium tracking-wide transition-opacity hover:opacity-70 sm:p-1 ${currentView === "home" && !isScrolled ? "text-white" : "text-black"}`}
               >
                 <Globe className="h-4 w-4 max-[360px]:h-3.5 max-[360px]:w-3.5" />
-                <span className="hidden sm:inline">
-                  {languageSelectorTab === "language" ? language : currency}
-                </span>
-                <ChevronRight
-                  className={`hidden h-2.5 w-2.5 transition-transform sm:block ${isLanguageMenuOpen ? "-rotate-90" : "rotate-90"}`}
-                />
+                <span className="hidden sm:inline">{languageSelectorTab === "language" ? "EN" : currency}</span>
+                <ChevronRight className={`hidden h-2.5 w-2.5 transition-transform sm:block ${isLanguageMenuOpen ? "-rotate-90" : "rotate-90"}`} />
               </button>
               {isLanguageMenuOpen && (
                 <div className="absolute left-0 right-auto top-full z-50 mt-2 w-48 rounded-xl border border-[#E8E6E2] bg-white p-1.5 text-[#222] shadow-xl max-[360px]:w-28 max-[360px]:max-w-[calc(100vw-1.5rem)] max-[360px]:-translate-x-4">
@@ -1640,36 +1628,27 @@ export default function App() {
                   </div>
                   <div className="max-h-56 space-y-0.5 overflow-y-auto">
                     {languageSelectorTab === "language"
-                      ? (
-                          [
-                            ["EN", "English"],
-                            ["HU", "Magyar"],
-                            ["SK", "Slovenčina"],
-                          ] as const
-                        ).map(([code, label]) => (
+                      ? ([
+                          ["EN", "English"],
+                          ["HU", "Magyar"],
+                          ["SK", "Slovenčina"],
+                        ] as const).map(([code, label]) => (
                           <button
                             key={code}
                             type="button"
-                            onClick={() => {
-                              setLanguage(code);
-                              setIsLanguageMenuOpen(false);
-                            }}
-                            className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-[11px] transition-colors hover:bg-[#F7F6F2] ${language === code ? "font-semibold text-black" : "text-[#666]"}`}
+                            onClick={() => setIsLanguageMenuOpen(false)}
+                            className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-[11px] transition-colors hover:bg-[#F7F6F2] ${code === "EN" ? "font-semibold text-black" : "text-[#666]"}`}
                           >
                             <span>{label}</span>
-                            {language === code && (
-                              <Check className="h-3.5 w-3.5 text-[#A58E6B]" />
-                            )}
+                            {code === "EN" && <Check className="h-3.5 w-3.5 text-[#A58E6B]" />}
                           </button>
                         ))
-                      : (
-                          [
-                            ["USD", "$"],
-                            ["EUR", "Ă˘â€šÂ¬"],
-                            ["GBP", "Ă‚Ĺ"],
-                            ["HUF", "Ft"],
-                          ] as const
-                        ).map(([code, symbol]) => (
+                      : ([
+                          ["USD", "$"],
+                          ["EUR", "€"],
+                          ["GBP", "£"],
+                          ["HUF", "Ft"],
+                        ] as const).map(([code, symbol]) => (
                           <button
                             key={code}
                             type="button"
@@ -1679,13 +1658,8 @@ export default function App() {
                             }}
                             className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-[11px] transition-colors hover:bg-[#F7F6F2] ${currency === code ? "font-semibold text-black" : "text-[#666]"}`}
                           >
-                            <span>
-                              {code}{" "}
-                              <span className="text-[#999]">{symbol}</span>
-                            </span>
-                            {currency === code && (
-                              <Check className="h-3.5 w-3.5 text-[#A58E6B]" />
-                            )}
+                            <span>{code} <span className="text-[#999]">{symbol}</span></span>
+                            {currency === code && <Check className="h-3.5 w-3.5 text-[#A58E6B]" />}
                           </button>
                         ))}
                   </div>
@@ -3047,8 +3021,8 @@ export default function App() {
           {/* SHOP BY CATEGORY (4 CARDS) & PROMO BANNERS */}
           <section className="shop-category-section py-16 bg-[#FAF9F6]">
             <div className="max-w-7xl mx-auto px-6 max-[360px]:px-4">
-              <div className="flex items-end justify-between gap-3 mb-10 max-[360px]:mb-7 max-[360px]:gap-2">
-                <div>
+              <div className="category-heading-row flex items-end justify-between gap-3 mb-10 max-[360px]:mb-7 max-[360px]:gap-2">
+                <div className="category-heading-copy">
                   <span className="text-xs uppercase tracking-widest text-[#777] font-medium block mb-2 max-[360px]:text-[9px]">
                     SHOP BY CATEGORY
                   </span>
@@ -3058,7 +3032,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => goToShop("all")}
-                  className="flex items-center gap-1 text-xs font-semibold uppercase tracking-widest hover:underline max-[360px]:flex-col max-[360px]:items-center max-[360px]:gap-0 max-[360px]:text-[9px] max-[360px]:leading-[1.25] max-[360px]:tracking-[0.1em]"
+                  className="category-all-link flex items-center gap-1 text-xs font-semibold uppercase tracking-widest hover:underline max-[360px]:flex-col max-[360px]:items-center max-[360px]:gap-0 max-[360px]:text-[9px] max-[360px]:leading-[1.25] max-[360px]:tracking-[0.1em]"
                 >
                   <span>View All</span><span>Categories →</span>
                 </button>
@@ -4116,6 +4090,9 @@ export default function App() {
         </div>
       )}
     </div>
-    </Localize>
   );
 }
+
+
+
+

@@ -3021,20 +3021,20 @@ export default function App() {
           {/* SHOP BY CATEGORY (4 CARDS) & PROMO BANNERS */}
           <section className="shop-category-section py-16 bg-[#FAF9F6]">
             <div className="max-w-7xl mx-auto px-6 max-[360px]:px-4">
-              <div className="category-heading-row flex items-end justify-between gap-3 mb-10 max-[360px]:mb-7 max-[360px]:gap-2">
-                <div className="category-heading-copy">
+              <div className="flex items-end justify-between gap-3 mb-10 max-[360px]:mb-7 max-[360px]:gap-2">
+                <div>
                   <span className="text-xs uppercase tracking-widest text-[#777] font-medium block mb-2 max-[360px]:text-[9px]">
                     SHOP BY CATEGORY
                   </span>
-                  <h2 className="font-serif-luxury text-3xl md:text-4xl font-normal max-[360px]:text-[1.45rem] max-[360px]:leading-[1.08]">
-                    Find Your Perfect <span className="max-[360px]:block">Style</span>
+                  <h2 className="font-serif-luxury text-3xl md:text-4xl font-normal">
+                    Find Your Perfect Style
                   </h2>
                 </div>
                 <button
                   onClick={() => goToShop("all")}
-                  className="category-all-link flex items-center gap-1 text-xs font-semibold uppercase tracking-widest hover:underline max-[360px]:flex-col max-[360px]:items-center max-[360px]:gap-0 max-[360px]:text-[9px] max-[360px]:leading-[1.25] max-[360px]:tracking-[0.1em]"
+                  className="whitespace-nowrap border-b border-black pb-1 text-xs font-semibold uppercase tracking-widest max-[360px]:text-[9px] max-[360px]:tracking-[0.08em]"
                 >
-                  <span>View All</span><span>Categories →</span>
+                  View All Categories →
                 </button>
               </div>
 

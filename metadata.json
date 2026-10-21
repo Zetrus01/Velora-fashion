@@ -1,0 +1,6 @@
+{
+  "name": "Lunora Fashion | High-End Minimalist Boutique",
+  "description": "Timeless fashion crafted for comfort, designed for elegance, made for you.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
